@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		297F56CA17A9B1AB0014D95C /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 297F56C917A9B1AB0014D95C /* AFSecurityPolicy.m */; };
 		2982AD3217107C0000FFF048 /* adn.cer in Resources */ = {isa = PBXBuildFile; fileRef = 2982AD3117107C0000FFF048 /* adn.cer */; };
+		BA77BD0819CA078100D458BC /* MOImageDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = BA77BD0719CA078100D458BC /* MOImageDiskCache.m */; };
 		E8C2E7A618970EE40097DCC8 /* root_ca.cer in Resources */ = {isa = PBXBuildFile; fileRef = E8C2E7A418970EE00097DCC8 /* root_ca.cer */; };
 		E8C2E7A718970EE40097DCC8 /* digicert_ca_3.cer in Resources */ = {isa = PBXBuildFile; fileRef = E8C2E7A518970EE00097DCC8 /* digicert_ca_3.cer */; };
 		F8129C7415910C37009BFE23 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8129C7215910C37009BFE23 /* AppDelegate.m */; };
@@ -56,6 +57,8 @@
 		2982AD3117107C0000FFF048 /* adn.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = adn.cer; sourceTree = SOURCE_ROOT; };
 		50ABD6EC159FC2CE001BE42C /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		55BDA27E17F5A434005DB933 /* UIKit+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIKit+AFNetworking.h"; sourceTree = "<group>"; };
+		BA77BD0619CA078100D458BC /* MOImageDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MOImageDiskCache.h; sourceTree = "<group>"; };
+		BA77BD0719CA078100D458BC /* MOImageDiskCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MOImageDiskCache.m; sourceTree = "<group>"; };
 		E8C2E7A418970EE00097DCC8 /* root_ca.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = root_ca.cer; sourceTree = SOURCE_ROOT; };
 		E8C2E7A518970EE00097DCC8 /* digicert_ca_3.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = digicert_ca_3.cer; sourceTree = SOURCE_ROOT; };
 		F8129C3815910830009BFE23 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -228,6 +231,8 @@
 		F8E02CEA177A8B710087BB23 /* UIKit+AFNetworking */ = {
 			isa = PBXGroup;
 			children = (
+				BA77BD0619CA078100D458BC /* MOImageDiskCache.h */,
+				BA77BD0719CA078100D458BC /* MOImageDiskCache.m */,
 				55BDA27E17F5A434005DB933 /* UIKit+AFNetworking.h */,
 				F8E02CEB177A8B710087BB23 /* AFNetworkActivityIndicatorManager.h */,
 				F8E02CEC177A8B710087BB23 /* AFNetworkActivityIndicatorManager.m */,
@@ -445,6 +450,7 @@
 				F8DA09E41396AC040057D0CC /* main.m in Sources */,
 				F8664A2018AA99F5007D8554 /* UIRefreshControl+AFNetworking.m in Sources */,
 				F8B3944D17DBF9B900430F25 /* AFHTTPRequestOperationManager.m in Sources */,
+				BA77BD0819CA078100D458BC /* MOImageDiskCache.m in Sources */,
 				F8CBED2317D595320088ADC0 /* UIAlertView+AFNetworking.m in Sources */,
 				F8FA9491150EF8C100ED4EAD /* AFAppDotNetAPIClient.m in Sources */,
 				F8FA9494150EF97E00ED4EAD /* Post.m in Sources */,
@@ -549,7 +555,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WARNING_CFLAGS = "-Wunreachable-code";
 				WRAPPER_EXTENSION = app;
@@ -602,7 +608,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				INFOPLIST_FILE = "iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = "-Wunreachable-code";

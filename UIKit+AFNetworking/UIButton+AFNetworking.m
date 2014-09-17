@@ -30,6 +30,7 @@
 #import "AFHTTPRequestOperation.h"
 
 #import "UIImageView+AFNetworking.h"
+#import "MOImageDiskCache.h"
 
 @interface UIButton (_AFNetworking)
 @end
@@ -85,15 +86,25 @@ static const char * af_backgroundImageRequestOperationKeyForState(UIControlState
 
 @implementation UIButton (AFNetworking)
 
-+ (id <AFImageCache>)sharedImageCache {
++ (id <AFImageCache>)sharedMemoryImageCache {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu"
-    return objc_getAssociatedObject(self, @selector(sharedImageCache)) ?: [UIImageView sharedImageCache];
+    return objc_getAssociatedObject(self, @selector(sharedMemoryImageCache)) ?: [UIImageView sharedMemoryImageCache];
 #pragma clang diagnostic pop
 }
 
-+ (void)setSharedImageCache:(id <AFImageCache>)imageCache {
-    objc_setAssociatedObject(self, @selector(sharedImageCache), imageCache, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
++ (void)setSharedMemoryImageCache:(id <AFImageCache>)imageCache {
+    objc_setAssociatedObject(self, @selector(sharedMemoryImageCache), imageCache, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (MOImageDiskCache *)sharedDiskImageCache
+{
+    return objc_getAssociatedObject(self, @selector(sharedDiskImageCache)) ?: [UIImageView sharedDiskImageCache];
+}
+
++ (void)setSharedDiskImageCache:(MOImageDiskCache *)imageCache
+{
+    objc_setAssociatedObject(self, @selector(sharedDiskImageCache), imageCache, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark -
@@ -141,7 +152,7 @@ static const char * af_backgroundImageRequestOperationKeyForState(UIControlState
 {
     [self cancelImageRequestOperationForState:state];
 
-    UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
+    UIImage *cachedImage = [[[self class] sharedMemoryImageCache] cachedImageForRequest:urlRequest];
     if (cachedImage) {
         if (success) {
             success(nil, nil, cachedImage);
@@ -151,32 +162,47 @@ static const char * af_backgroundImageRequestOperationKeyForState(UIControlState
 
         [self af_setImageRequestOperation:nil forState:state];
     } else {
-        if (placeholderImage) {
-            [self setImage:placeholderImage forState:state];
+        NSString *diskImageKey = [[urlRequest URL] relativePath];
+        cachedImage = [[[self class] sharedDiskImageCache] synQueryDiskImageForKey:diskImageKey];
+        
+        if (cachedImage) {
+            if (success) {
+                success(nil, nil, cachedImage);
+            } else {
+                [self setImage:cachedImage forState:state];
+            }
+            
+            [self af_setImageRequestOperation:nil forState:state];
+        } else {
+            if (placeholderImage) {
+                [self setImage:placeholderImage forState:state];
+            }
+            
+            __weak __typeof(self)weakSelf = self;
+            AFHTTPRequestOperation *imageRequestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:urlRequest];
+            imageRequestOperation.responseSerializer = self.imageResponseSerializer;
+            [imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+                __strong __typeof(weakSelf)strongSelf = weakSelf;
+                if ([[urlRequest URL] isEqual:[operation.request URL]]) {
+                    if (success) {
+                        success(operation.request, operation.response, responseObject);
+                    } else if (responseObject) {
+                        [strongSelf setImage:responseObject forState:state];
+                    }
+                }
+                [[[strongSelf class] sharedMemoryImageCache] cacheImage:responseObject forRequest:urlRequest];
+                [[[strongSelf class] sharedDiskImageCache] saveImage:responseObject onDiskForKey:diskImageKey];
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                if ([[urlRequest URL] isEqual:[operation.response URL]]) {
+                    if (failure) {
+                        failure(error);
+                    }
+                }
+            }];
+            
+            [self af_setImageRequestOperation:imageRequestOperation forState:state];
+            [[[self class] af_sharedImageRequestOperationQueue] addOperation:imageRequestOperation];
         }
-
-        __weak __typeof(self)weakSelf = self;
-        AFHTTPRequestOperation *imageRequestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:urlRequest];
-        imageRequestOperation.responseSerializer = self.imageResponseSerializer;
-        [imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            __strong __typeof(weakSelf)strongSelf = weakSelf;
-            if ([[urlRequest URL] isEqual:[operation.request URL]]) {
-                if (success) {
-                    success(operation.request, operation.response, responseObject);
-                } else if (responseObject) {
-                    [strongSelf setImage:responseObject forState:state];
-                }
-            }
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            if ([[urlRequest URL] isEqual:[operation.response URL]]) {
-                if (failure) {
-                    failure(error);
-                }
-            }
-        }];
-
-        [self af_setImageRequestOperation:imageRequestOperation forState:state];
-        [[[self class] af_sharedImageRequestOperationQueue] addOperation:imageRequestOperation];
     }
 }
 
@@ -206,7 +232,7 @@ static const char * af_backgroundImageRequestOperationKeyForState(UIControlState
 {
     [self cancelBackgroundImageRequestOperationForState:state];
 
-    UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
+    UIImage *cachedImage = [[[self class] sharedMemoryImageCache] cachedImageForRequest:urlRequest];
     if (cachedImage) {
         if (success) {
             success(nil, nil, cachedImage);

@@ -29,6 +29,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol AFURLResponseSerialization, AFImageCache;
+@class MOImageDiskCache;
 
 /**
  This category adds methods to the UIKit framework's `UIImageView` class. The methods in this category provide support for loading remote images asynchronously from a URL.
@@ -41,15 +42,22 @@
 
 /**
  The image cache used to improve image loadiing performance on scroll views. By default, this is an `NSCache` subclass conforming to the `AFImageCache` protocol, which listens for notification warnings and evicts objects accordingly.
-*/
-+ (id <AFImageCache>)sharedImageCache;
+ */
++ (id <AFImageCache>)sharedMemoryImageCache;
 
 /**
  Set the cache used for image loading.
  
  @param imageCache The image cache.
  */
-+ (void)setSharedImageCache:(id <AFImageCache>)imageCache;
++ (void)setSharedMemoryImageCache:(id <AFImageCache>)imageCache;
+
+
+///------------------------------------
+/// @name Accessing Image Disk Cache
+///------------------------------------
++ (MOImageDiskCache *)sharedDiskImageCache;
++ (void)setSharedDiskImageCache:(MOImageDiskCache *)imageCache;
 
 ///------------------------------------
 /// @name Accessing Response Serializer
@@ -138,6 +146,12 @@
  */
 - (void)cacheImage:(UIImage *)image
         forRequest:(NSURLRequest *)request;
+
+- (void)cacheImage:(UIImage *)image
+            forURL:(NSURL *)URL;
+- (UIImage *)cachedImageForURL:(NSURL *)URL;
+
+
 @end
 
 #endif

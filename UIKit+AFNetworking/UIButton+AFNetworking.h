@@ -29,6 +29,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol AFURLResponseSerialization, AFImageCache;
+@class MOImageDiskCache;
 
 /**
  This category adds methods to the UIKit framework's `UIButton` class. The methods in this category provide support for loading remote images and background images asynchronously from a URL.
@@ -42,14 +43,20 @@
 /**
  The image cache used to improve image loadiing performance on scroll views. By default, `UIButton` will use the `sharedImageCache` of `UIImageView`.
  */
-+ (id <AFImageCache>)sharedImageCache;
++ (id <AFImageCache>)sharedMemoryImageCache;
 
 /**
  Set the cache used for image loading.
 
  @param imageCache The image cache.
  */
-+ (void)setSharedImageCache:(id <AFImageCache>)imageCache;
++ (void)setSharedMemoryImageCache:(id <AFImageCache>)imageCache;
+
+///------------------------------------
+/// @name Accessing Image Disk Cache
+///------------------------------------
++ (MOImageDiskCache *)sharedDiskImageCache;
++ (void)setSharedDiskImageCache:(MOImageDiskCache *)imageCache;
 
 ///------------------------------------
 /// @name Accessing Response Serializer
